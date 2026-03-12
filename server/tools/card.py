@@ -3,7 +3,7 @@ This module contains tools for managing Trello cards.
 """
 
 import logging
-from typing import List
+from typing import Dict, List
 
 from mcp.server.fastmcp import Context
 
@@ -55,6 +55,30 @@ async def get_cards(ctx: Context, list_id: str) -> List[TrelloCard]:
         return result
     except Exception as e:
         error_msg = f"Failed to get cards: {str(e)}"
+        logger.error(error_msg)
+        await ctx.error(error_msg)
+        raise
+
+
+async def get_card_comments(
+    ctx: Context, card_id: str, limit: int = 10
+) -> List[Dict[str, str]]:
+    """Retrieves newest-first comments for a specific card.
+
+    Args:
+        card_id (str): The ID of the card to retrieve comments for.
+        limit (int): Maximum number of comments to return. Defaults to 10, recommended max 20.
+
+    Returns:
+        List[Dict[str, str]]: List of comments containing date, author, and text.
+    """
+    try:
+        logger.info(f"Getting comments for card: {card_id} with limit: {limit}")
+        result = await service.get_card_comments(card_id=card_id, limit=limit)
+        logger.info(f"Successfully retrieved {len(result)} comments for card: {card_id}")
+        return result
+    except Exception as e:
+        error_msg = f"Failed to get card comments: {str(e)}"
         logger.error(error_msg)
         await ctx.error(error_msg)
         raise

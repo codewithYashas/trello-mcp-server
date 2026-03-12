@@ -40,6 +40,31 @@ class CardService:
         response = await self.client.GET(f"/lists/{list_id}/cards")
         return [TrelloCard(**card) for card in response]
 
+    async def get_card_comments(
+        self, card_id: str, limit: int = 10
+    ) -> List[Dict[str, str]]:
+        """Retrieves comment actions for a specific card.
+
+        Args:
+            card_id (str): The ID of the card.
+            limit (int): Maximum number of comments to return.
+
+        Returns:
+            List[Dict[str, str]]: Newest-first comments with date, author, and text.
+        """
+        response = await self.client.GET(
+            f"/cards/{card_id}/actions",
+            params={"filter": "commentCard", "limit": limit},
+        )
+        return [
+            {
+                "date": action.get("date", ""),
+                "author": action.get("memberCreator", {}).get("fullName", ""),
+                "text": action.get("data", {}).get("text", ""),
+            }
+            for action in response
+        ]
+
     async def create_card(self, **kwargs) -> TrelloCard:
         """Creates a new card in a given list.
 

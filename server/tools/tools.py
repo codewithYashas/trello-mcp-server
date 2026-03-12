@@ -13,6 +13,7 @@ def register_tools(mcp):
     if os.getenv("LITE", "false").lower() == "true":
         mcp.add_tool(card.get_cards)
         mcp.add_tool(card.get_card)
+        mcp.add_tool(card.get_card_comments)
         mcp.add_tool(checklist.get_card_checklists)
         return
 
