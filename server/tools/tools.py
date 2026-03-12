@@ -14,7 +14,7 @@ def register_tools(mcp):
         mcp.add_tool(card.get_cards)
         mcp.add_tool(card.get_card)
         mcp.add_tool(card.get_card_comments)
-        mcp.add_tool(checklist.get_card_checklists)
+        mcp.add_tool(checklist.get_card_checklists_summary)
         return
 
     from server.tools import board, list

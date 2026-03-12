@@ -5,6 +5,8 @@ This module contains tools for managing Trello checklists.
 import logging
 from typing import Dict, List
 
+from mcp.server.fastmcp import Context
+
 from server.services.checklist import ChecklistService
 from server.trello import client
 
@@ -36,6 +38,38 @@ async def get_card_checklists(card_id: str) -> List[Dict]:
         List[Dict]: List of checklists on the card
     """
     return await service.get_card_checklists(card_id)
+
+
+async def get_card_checklists_summary(ctx: Context, card_id: str) -> List[Dict]:
+    """
+    Get a summary of all checklists for a specific card.
+
+    Args:
+        card_id (str): The ID of the card to get checklists for
+
+    Returns:
+        List[Dict]: Checklists with name and items (name + state only)
+    """
+    try:
+        logger.info(f"Getting checklist summary for card: {card_id}")
+        raw = await service.get_card_checklists(card_id)
+        result = [
+            {
+                "name": checklist.get("name", ""),
+                "items": [
+                    {"name": item.get("name", ""), "state": item.get("state", "")}
+                    for item in checklist.get("checkItems", [])
+                ],
+            }
+            for checklist in raw
+        ]
+        logger.info(f"Successfully retrieved {len(result)} checklists for card: {card_id}")
+        return result
+    except Exception as e:
+        error_msg = f"Failed to get checklist summary: {str(e)}"
+        logger.error(error_msg)
+        await ctx.error(error_msg)
+        raise
 
 
 async def create_checklist(card_id: str, name: str, pos: str | None = None) -> Dict:
