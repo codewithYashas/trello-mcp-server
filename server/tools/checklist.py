@@ -48,16 +48,21 @@ async def get_card_checklists_summary(ctx: Context, card_id: str) -> List[Dict]:
         card_id (str): The ID of the card to get checklists for
 
     Returns:
-        List[Dict]: Checklists with name and items (name + state only)
+        List[Dict]: Checklists with checklist/item IDs, names, and item state
     """
     try:
         logger.info(f"Getting checklist summary for card: {card_id}")
         raw = await service.get_card_checklists(card_id)
         result = [
             {
+                "id": checklist.get("id", ""),
                 "name": checklist.get("name", ""),
                 "items": [
-                    {"name": item.get("name", ""), "state": item.get("state", "")}
+                    {
+                        "id": item.get("id", ""),
+                        "name": item.get("name", ""),
+                        "state": item.get("state", ""),
+                    }
                     for item in checklist.get("checkItems", [])
                 ],
             }
