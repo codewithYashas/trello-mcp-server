@@ -1,6 +1,6 @@
 """
 This module contains tools for managing Trello boards, lists, and cards.
-Set LITE=true in .env for a minimal read-only tool surface (local model friendly).
+Set LITE=true in .env for a minimal tool surface (local LLM friendly).
 """
 
 import os
@@ -15,6 +15,7 @@ def register_tools(mcp):
         mcp.add_tool(card.get_card)
         mcp.add_tool(card.get_card_comments)
         mcp.add_tool(checklist.get_card_checklists_summary)
+        mcp.add_tool(checklist.add_checkitem)
         return
 
     from server.tools import board, list
